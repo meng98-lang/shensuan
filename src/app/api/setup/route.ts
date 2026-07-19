@@ -57,18 +57,19 @@ export async function GET() {
     return NextResponse.json({ success: false, error: 'Missing COZE_SUPABASE_SECRET_KEY env var' }, { status: 400 })
   }
 
-  // Extract host from URL: https://xxx.supabase.co -> db.xxx.supabase.co
+  // Extract project ref from URL: https://xxx.supabase.co -> xxx
   const urlObj = new URL(supabaseUrl)
-  const dbHost = 'db.' + urlObj.hostname
+  const projectRef = urlObj.hostname.replace('.supabase.co', '')
+  const dbHost = `db.${projectRef}.supabase.co`
 
   const client = new Client({
     host: dbHost,
     port: 5432,
-    user: 'postgres',
+    user: `postgres`,
     password: supabaseKey,
     database: 'postgres',
     ssl: { rejectUnauthorized: false },
-    connectionTimeoutMillis: 10000,
+    connectionTimeoutMillis: 15000,
   })
 
   try {
