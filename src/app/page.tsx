@@ -2,6 +2,8 @@ import { getSettings, getContacts } from '@/lib/db';
 import TrackingScripts from '@/components/tracking-scripts';
 import ContactButton from '@/components/contact-button';
 
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
   const settings = await getSettings();
   const contacts = await getContacts();
