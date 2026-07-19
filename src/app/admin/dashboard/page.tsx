@@ -19,11 +19,13 @@ interface Settings {
   noteText: string;
 }
 
-interface Pixels {
-  googleAnalytics: string;
-  facebookPixel: string;
-  tiktokPixel: string;
+interface Pixel {
+  id: string;
+  type: string;
+  name: string;
+  pixelId: string;
   customCode: string;
+  enabled: boolean;
 }
 
 interface ClickStats {
@@ -53,12 +55,7 @@ export default function AdminDashboard() {
     themeColor: '#4a7c59',
     noteText: ''
   });
-  const [pixels, setPixels] = useState<Pixels>({
-    googleAnalytics: '',
-    facebookPixel: '',
-    tiktokPixel: '',
-    customCode: ''
-  });
+  const [pixels, setPixels] = useState<Pixel[]>([]);
   const [stats, setStats] = useState<ClickStats[]>([]);
   const [statsSummary, setStatsSummary] = useState<StatsSummary>({
     totalClicks: 0,
@@ -104,8 +101,12 @@ export default function AdminDashboard() {
     const res = await fetch('/api/stats');
     const data = await res.json();
     if (data.success) {
-      setStats(data.stats);
-      setStatsSummary(data.summary);
+      setStats(data.data.clicks || []);
+      setStatsSummary({
+        totalClicks: data.data.total || 0,
+        todayClicks: data.data.today || 0,
+        totalContacts: contacts.filter(c => c.enabled).length
+      });
     }
   };
 
@@ -154,12 +155,49 @@ export default function AdminDashboard() {
   };
 
   const handleSavePixels = async () => {
-    await fetch('/api/pixels', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(pixels)
-    });
+    // Save each pixel individually
+    for (const pixel of pixels) {
+      await fetch('/api/pixels', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(pixel)
+      });
+    }
     alert('像素代碼已保存');
+  };
+
+  const handleAddPixel = async (type: string, name: string) => {
+    const res = await fetch('/api/pixels', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, name, pixelId: '', customCode: '', enabled: true })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setPixels([...pixels, data]);
+    }
+  };
+
+  const handleDeletePixel = async (id: string) => {
+    const res = await fetch('/api/pixels', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    });
+    if (res.ok) {
+      setPixels(pixels.filter(p => p.id !== id));
+    }
+  };
+
+  const handleUpdatePixel = async (pixel: Pixel) => {
+    const res = await fetch('/api/pixels', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(pixel)
+    });
+    if (res.ok) {
+      setPixels(pixels.map(p => p.id === pixel.id ? pixel : p));
+    }
   };
 
   const handleLogout = () => {
@@ -353,53 +391,69 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'pixels' && (
-          <div className="bg-white p-6 rounded-lg shadow-sm space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Google Analytics ID</label>
-              <input
-                type="text"
-                value={pixels.googleAnalytics}
-                onChange={(e) => setPixels({ ...pixels, googleAnalytics: e.target.value })}
-                placeholder="G-XXXXXXXXXX"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              />
+          <div className="space-y-4">
+            <div className="flex gap-2 mb-4">
+              <button onClick={() => handleAddPixel('google', 'Google Analytics')} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                + Google Analytics
+              </button>
+              <button onClick={() => handleAddPixel('facebook', 'Facebook Pixel')} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                + Facebook Pixel
+              </button>
+              <button onClick={() => handleAddPixel('tiktok', 'TikTok Pixel')} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                + TikTok Pixel
+              </button>
+              <button onClick={() => handleAddPixel('custom', '自訂代碼')} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                + 自訂代碼
+              </button>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Facebook Pixel ID</label>
-              <input
-                type="text"
-                value={pixels.facebookPixel}
-                onChange={(e) => setPixels({ ...pixels, facebookPixel: e.target.value })}
-                placeholder="123456789012345"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">TikTok Pixel ID</label>
-              <input
-                type="text"
-                value={pixels.tiktokPixel}
-                onChange={(e) => setPixels({ ...pixels, tiktokPixel: e.target.value })}
-                placeholder="XXXXXXXXXX"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">自訂代碼</label>
-              <textarea
-                value={pixels.customCode}
-                onChange={(e) => setPixels({ ...pixels, customCode: e.target.value })}
-                rows={6}
-                placeholder="粘贴自定义 HTML/JS 代码"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg font-mono text-sm"
-              />
-            </div>
-            <button
-              onClick={handleSavePixels}
-              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-            >
-              保存像素代碼
-            </button>
+
+            {pixels.map((pixel) => (
+              <div key={pixel.id} className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="flex justify-between items-center mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{pixel.name}</span>
+                    <span className={`text-xs px-2 py-1 rounded ${pixel.enabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                      {pixel.enabled ? '啟用' : '停用'}
+                    </span>
+                  </div>
+                  <div className="space-x-2">
+                    <button onClick={() => handleUpdatePixel({ ...pixel, enabled: !pixel.enabled })} className="text-sm text-blue-600 hover:underline">
+                      {pixel.enabled ? '停用' : '啟用'}
+                    </button>
+                    <button onClick={() => handleDeletePixel(pixel.id)} className="text-sm text-red-600 hover:underline">
+                      刪除
+                    </button>
+                  </div>
+                </div>
+                {pixel.type !== 'custom' ? (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Pixel ID</label>
+                    <input
+                      type="text"
+                      value={pixel.pixelId}
+                      onChange={(e) => handleUpdatePixel({ ...pixel, pixelId: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">自訂代碼</label>
+                    <textarea
+                      value={pixel.customCode}
+                      onChange={(e) => handleUpdatePixel({ ...pixel, customCode: e.target.value })}
+                      rows={4}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg font-mono text-sm"
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {pixels.length === 0 && (
+              <div className="bg-white p-6 rounded-lg shadow-sm text-center text-gray-500">
+                暫無像素代碼，請點擊上方按鈕新增
+              </div>
+            )}
           </div>
         )}
 
