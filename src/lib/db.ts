@@ -86,3 +86,12 @@ export async function updatePixels(pixels: Pixels): Promise<Pixels> {
 
 // Auth
 export const ADMIN_PASSWORD = 'admin888';
+
+// Generic data access
+export async function readData<T>(filename: string): Promise<T> {
+  return readJson<T>(filename);
+}
+
+export async function writeData<T>(filename: string, data: T): Promise<void> {
+  await writeJson(filename, data);
+}

@@ -1,5 +1,6 @@
 import { getSettings, getContacts } from '@/lib/db';
 import TrackingScripts from '@/components/tracking-scripts';
+import ContactButton from '@/components/contact-button';
 
 export default async function HomePage() {
   const settings = await getSettings();
@@ -36,21 +37,7 @@ export default async function HomePage() {
         {/* 联系按钮 */}
         <div className="space-y-4 mb-8">
           {activeContacts.map(contact => (
-            <a
-              key={contact.id}
-              href={contact.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full py-4 px-6 rounded-full text-white text-center font-semibold text-lg shadow-md hover:shadow-lg transition-all hover:scale-105"
-              style={{ 
-                backgroundColor: contact.platform === 'line' ? '#06C755' : 
-                               contact.platform === 'whatsapp' ? '#25D366' : 
-                               contact.platform === 'telegram' ? '#0088cc' : 
-                               contact.platform === 'wechat' ? '#07C160' : settings.themeColor 
-              }}
-            >
-              {contact.displayName}
-            </a>
+            <ContactButton key={contact.id} contact={contact} themeColor={settings.themeColor} />
           ))}
         </div>
 

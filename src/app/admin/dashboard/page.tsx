@@ -26,9 +26,25 @@ interface Pixels {
   customCode: string;
 }
 
+interface ClickStats {
+  contactId: string;
+  platform: string;
+  name: string;
+  totalClicks: number;
+  todayClicks: number;
+  weekClicks: number;
+  lastClick: string | null;
+}
+
+interface StatsSummary {
+  totalClicks: number;
+  todayClicks: number;
+  totalContacts: number;
+}
+
 export default function AdminDashboard() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'contacts' | 'settings' | 'pixels'>('contacts');
+  const [activeTab, setActiveTab] = useState<'contacts' | 'settings' | 'pixels' | 'stats'>('contacts');
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [settings, setSettings] = useState<Settings>({
     siteName: '',
@@ -42,6 +58,12 @@ export default function AdminDashboard() {
     facebookPixel: '',
     tiktokPixel: '',
     customCode: ''
+  });
+  const [stats, setStats] = useState<ClickStats[]>([]);
+  const [statsSummary, setStatsSummary] = useState<StatsSummary>({
+    totalClicks: 0,
+    todayClicks: 0,
+    totalContacts: 0
   });
 
   // 新增联系方式表单
@@ -61,6 +83,12 @@ export default function AdminDashboard() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (activeTab === 'stats') {
+      fetchStats();
+    }
+  }, [activeTab]);
+
   const fetchData = async () => {
     const [contactsRes, settingsRes, pixelsRes] = await Promise.all([
       fetch('/api/contacts'),
@@ -70,6 +98,15 @@ export default function AdminDashboard() {
     setContacts(await contactsRes.json());
     setSettings(await settingsRes.json());
     setPixels(await pixelsRes.json());
+  };
+
+  const fetchStats = async () => {
+    const res = await fetch('/api/stats');
+    const data = await res.json();
+    if (data.success) {
+      setStats(data.stats);
+      setStatsSummary(data.summary);
+    }
   };
 
   const handleAddContact = async () => {
@@ -158,6 +195,12 @@ export default function AdminDashboard() {
             className={`pb-2 px-4 ${activeTab === 'pixels' ? 'border-b-2 border-green-600 text-green-600' : 'text-gray-600'}`}
           >
             像素代碼
+          </button>
+          <button
+            onClick={() => setActiveTab('stats')}
+            className={`pb-2 px-4 ${activeTab === 'stats' ? 'border-b-2 border-green-600 text-green-600' : 'text-gray-600'}`}
+          >
+            點擊統計
           </button>
         </div>
 
@@ -357,6 +400,83 @@ export default function AdminDashboard() {
             >
               保存像素代碼
             </button>
+          </div>
+        )}
+
+        {activeTab === 'stats' && (
+          <div className="space-y-6">
+            {/* 总体统计 */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white p-6 rounded-lg shadow-sm">
+                <div className="text-sm text-gray-600 mb-1">總點擊數</div>
+                <div className="text-3xl font-bold text-green-600">{statsSummary.totalClicks}</div>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow-sm">
+                <div className="text-sm text-gray-600 mb-1">今日點擊</div>
+                <div className="text-3xl font-bold text-blue-600">{statsSummary.todayClicks}</div>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow-sm">
+                <div className="text-sm text-gray-600 mb-1">活躍聯繫方式</div>
+                <div className="text-3xl font-bold text-purple-600">{statsSummary.totalContacts}</div>
+              </div>
+            </div>
+
+            {/* 详细统计 */}
+            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900">各聯繫方式點擊統計</h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">平台</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">名稱</th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">總點擊</th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">今日</th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">近 7 天</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">最後點擊</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {stats.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                          暫無點擊數據
+                        </td>
+                      </tr>
+                    ) : (
+                      stats.map((stat) => (
+                        <tr key={stat.contactId} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              {stat.platform}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{stat.name}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-center font-semibold">{stat.totalClicks}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-blue-600 font-semibold">{stat.todayClicks}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-purple-600 font-semibold">{stat.weekClicks}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {stat.lastClick ? new Date(stat.lastClick).toLocaleString('zh-TW') : '-'}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* 刷新按钮 */}
+            <div className="flex justify-end">
+              <button
+                onClick={fetchStats}
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+              >
+                刷新數據
+              </button>
+            </div>
           </div>
         )}
       </div>
