@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 export default async function HomePage() {
   const settings = await getSettings();
   const contacts = await getContacts();
-  const activeContacts = contacts.filter(c => c.active);
+  const activeContacts = contacts.filter(c => c.enabled);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4" style={{ backgroundColor: settings.bgColor }}>
