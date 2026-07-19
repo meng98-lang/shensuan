@@ -1,97 +1,165 @@
-import { promises as fs } from 'fs';
-import path from 'path';
+import { supabase } from './supabase'
 
-const DATA_DIR = path.join(process.cwd(), 'data');
-
-export interface Settings {
-  siteName: string;
-  avatarUrl: string;
-  bgColor: string;
-  themeColor: string;
-  note: string;
+export interface SiteSettings {
+  siteName: string
+  avatarUrl: string
+  backgroundColor: string
+  themeColor: string
+  noteText: string
+  adminPassword: string
 }
 
 export interface Contact {
-  id: string;
-  platform: string;
-  displayName: string;
-  link: string;
-  active: boolean;
+  id: string
+  platform: string
+  displayName: string
+  link: string
+  enabled: boolean
+  order: number
 }
 
-export interface Pixels {
-  googleAnalytics: string;
-  facebookPixel: string;
-  tiktokPixel: string;
-  customCode: string;
+export interface Pixel {
+  id: string
+  type: string
+  name: string
+  pixelId: string
+  customCode: string
+  enabled: boolean
 }
 
-async function readJson<T>(filename: string): Promise<T> {
-  const filePath = path.join(DATA_DIR, filename);
-  const data = await fs.readFile(filePath, 'utf-8');
-  return JSON.parse(data);
+export interface Click {
+  id: string
+  contactId: string
+  platform: string
+  timestamp: string
+  page: string
+  ip: string
 }
 
-async function writeJson<T>(filename: string, data: T): Promise<void> {
-  const filePath = path.join(DATA_DIR, filename);
-  await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+// 设置相关
+export async function getSettings(): Promise<SiteSettings> {
+  const { data, error } = await supabase
+    .from('settings')
+    .select('*')
+    .single()
+
+  if (error || !data) {
+    return {
+      siteName: '神算黃鐵口',
+      avatarUrl: '/avatar.jpg',
+      backgroundColor: '#f5f5dc',
+      themeColor: '#4a7c59',
+      noteText: '不要重複點擊添加哦\n前面加的會優先回復',
+      adminPassword: 'admin888'
+    }
+  }
+
+  return data as SiteSettings
 }
 
-// Settings
-export async function getSettings(): Promise<Settings> {
-  return readJson<Settings>('settings.json');
+export async function updateSettings(settings: Partial<SiteSettings>): Promise<void> {
+  const { error } = await supabase
+    .from('settings')
+    .upsert({ id: 1, ...settings })
+
+  if (error) throw error
 }
 
-export async function updateSettings(settings: Settings): Promise<Settings> {
-  await writeJson('settings.json', settings);
-  return settings;
-}
-
-// Contacts
+// 联系方式相关
 export async function getContacts(): Promise<Contact[]> {
-  return readJson<Contact[]>('contacts.json');
+  const { data, error } = await supabase
+    .from('contacts')
+    .select('*')
+    .eq('enabled', true)
+    .order('order')
+
+  if (error) return []
+  return data as Contact[]
 }
 
-export async function addContact(contact: Contact): Promise<Contact[]> {
-  const contacts = await getContacts();
-  contact.id = Date.now().toString();
-  contacts.push(contact);
-  await writeJson('contacts.json', contacts);
-  return contacts;
+export async function getAllContacts(): Promise<Contact[]> {
+  const { data, error } = await supabase
+    .from('contacts')
+    .select('*')
+    .order('order')
+
+  if (error) return []
+  return data as Contact[]
 }
 
-export async function deleteContact(id: string): Promise<Contact[]> {
-  const contacts = await getContacts();
-  const filtered = contacts.filter(c => c.id !== id);
-  await writeJson('contacts.json', filtered);
-  return filtered;
+export async function createContact(contact: Omit<Contact, 'id'>): Promise<Contact> {
+  const { data, error } = await supabase
+    .from('contacts')
+    .insert(contact)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data as Contact
 }
 
-export async function toggleContact(id: string): Promise<Contact[]> {
-  const contacts = await getContacts();
-  const updated = contacts.map(c => c.id === id ? { ...c, active: !c.active } : c);
-  await writeJson('contacts.json', updated);
-  return updated;
+export async function updateContact(id: string, contact: Partial<Contact>): Promise<void> {
+  const { error } = await supabase
+    .from('contacts')
+    .update(contact)
+    .eq('id', id)
+
+  if (error) throw error
 }
 
-// Pixels
-export async function getPixels(): Promise<Pixels> {
-  return readJson<Pixels>('pixels.json');
+export async function deleteContact(id: string): Promise<void> {
+  const { error } = await supabase
+    .from('contacts')
+    .delete()
+    .eq('id', id)
+
+  if (error) throw error
 }
 
-export async function updatePixels(pixels: Pixels): Promise<Pixels> {
-  await writeJson('pixels.json', pixels);
-  return pixels;
+// 像素代码相关
+export async function getPixels(): Promise<Pixel[]> {
+  const { data, error } = await supabase
+    .from('pixels')
+    .select('*')
+    .order('type')
+
+  if (error) return []
+  return data as Pixel[]
 }
 
-// Auth
-export const ADMIN_PASSWORD = 'admin888';
+export async function updatePixels(pixels: Pixel[]): Promise<void> {
+  for (const pixel of pixels) {
+    const { error } = await supabase
+      .from('pixels')
+      .upsert(pixel)
 
-// Generic data access
-export async function readData<T>(filename: string): Promise<T> {
-  return readJson<T>(filename);
+    if (error) throw error
+  }
 }
 
-export async function writeData<T>(filename: string, data: T): Promise<void> {
-  await writeJson(filename, data);
+// 点击统计相关
+export async function recordClick(contactId: string, platform: string, page: string, ip: string): Promise<void> {
+  const { error } = await supabase
+    .from('clicks')
+    .insert({ contactId, platform, page, ip })
+
+  if (error) throw error
+}
+
+export async function getClickStats(): Promise<{ clicks: Click[]; total: number; today: number }> {
+  const { data: clicks, error } = await supabase
+    .from('clicks')
+    .select('*')
+    .order('timestamp', { ascending: false })
+
+  if (error) return { clicks: [], total: 0, today: 0 }
+
+  const today = new Date().toISOString().split('T')[0]
+  const todayClicks = clicks.filter(c => c.timestamp.startsWith(today))
+
+  return {
+    clicks: clicks as Click[],
+    total: clicks.length,
+    today: todayClicks.length
+  }
 }
