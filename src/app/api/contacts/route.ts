@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getContacts, createContact, removeContact, updateContact } from '@/lib/db';
+import { getContacts, createContact, deleteContact, updateContact } from '@/lib/db';
 
 export async function GET() {
   const contacts = await getContacts();
@@ -14,7 +14,7 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   const { id } = await request.json();
-  const contacts = await removeContact(id);
+  const contacts = await deleteContact(id);
   return NextResponse.json(contacts);
 }
 
