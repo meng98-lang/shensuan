@@ -2,7 +2,7 @@ import { getContacts } from '@/lib/db';
 
 export default async function ContactPage() {
   const contacts = await getContacts();
-  const activeContacts = contacts.filter(c => c.active);
+  const activeContacts = contacts.filter(c => c.enabled);
 
   return (
     <div className="min-h-screen p-8" style={{ backgroundColor: '#f5f5dc' }}>
@@ -22,7 +22,7 @@ export default async function ContactPage() {
                                contact.platform === 'whatsapp' ? '#25D366' : '#4a7c59' 
               }}
             >
-              {contact.displayName}
+              {contact.display_name}
             </a>
           ))}
         </div>
