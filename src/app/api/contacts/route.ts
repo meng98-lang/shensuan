@@ -19,7 +19,7 @@ export async function DELETE(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const { id } = await request.json();
-  const contacts = await updateContact(id);
+  const { id, enabled } = await request.json();
+  const contacts = await updateContact(id, enabled);
   return NextResponse.json(contacts);
 }
