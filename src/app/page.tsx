@@ -44,9 +44,9 @@ export default async function HomePage() {
         </div>
 
         {/* 备注 */}
-        {settings.note && (
+        {settings.noteText && (
           <p className="text-center text-gray-600 text-sm whitespace-pre-line">
-            {settings.note}
+            {settings.noteText}
           </p>
         )}
 
