@@ -22,7 +22,7 @@ export default async function ContactPage() {
                                contact.platform === 'whatsapp' ? '#25D366' : '#4a7c59' 
               }}
             >
-              {contact.display_name}
+              {contact.displayName}
             </a>
           ))}
         </div>
