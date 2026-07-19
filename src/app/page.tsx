@@ -10,7 +10,7 @@ export default async function HomePage() {
   const activeContacts = contacts.filter(c => c.enabled);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4" style={{ backgroundColor: settings.bgColor }}>
+    <div className="min-h-screen flex flex-col items-center justify-center p-4" style={{ backgroundColor: settings.backgroundColor }}>
       <TrackingScripts />
       
       {/* 背景装饰 */}
