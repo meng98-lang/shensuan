@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getSettings } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   const { password } = await request.json();
   const settings = await getSettings();

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getPixels, updatePixels } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const pixels = await getPixels();
   return NextResponse.json(pixels);

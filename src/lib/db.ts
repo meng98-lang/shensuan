@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import { getSupabase } from './supabase'
 
 export interface SiteSettings {
   siteName: string
@@ -38,7 +38,7 @@ export interface Click {
 
 // 设置相关
 export async function getSettings(): Promise<SiteSettings> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('settings')
     .select('*')
     .single()
@@ -58,7 +58,7 @@ export async function getSettings(): Promise<SiteSettings> {
 }
 
 export async function updateSettings(settings: Partial<SiteSettings>): Promise<void> {
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from('settings')
     .upsert({ id: 1, ...settings })
 
@@ -67,7 +67,7 @@ export async function updateSettings(settings: Partial<SiteSettings>): Promise<v
 
 // 联系方式相关
 export async function getContacts(): Promise<Contact[]> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('contacts')
     .select('*')
     .eq('enabled', true)
@@ -78,7 +78,7 @@ export async function getContacts(): Promise<Contact[]> {
 }
 
 export async function getAllContacts(): Promise<Contact[]> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('contacts')
     .select('*')
     .order('order')
@@ -88,7 +88,7 @@ export async function getAllContacts(): Promise<Contact[]> {
 }
 
 export async function createContact(contact: Omit<Contact, 'id'>): Promise<Contact> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('contacts')
     .insert(contact)
     .select()
@@ -99,7 +99,7 @@ export async function createContact(contact: Omit<Contact, 'id'>): Promise<Conta
 }
 
 export async function updateContact(id: string, contact: Partial<Contact>): Promise<void> {
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from('contacts')
     .update(contact)
     .eq('id', id)
@@ -108,7 +108,7 @@ export async function updateContact(id: string, contact: Partial<Contact>): Prom
 }
 
 export async function deleteContact(id: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from('contacts')
     .delete()
     .eq('id', id)
@@ -118,7 +118,7 @@ export async function deleteContact(id: string): Promise<void> {
 
 // 像素代码相关
 export async function getPixels(): Promise<Pixel[]> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('pixels')
     .select('*')
     .order('type')
@@ -129,7 +129,7 @@ export async function getPixels(): Promise<Pixel[]> {
 
 export async function updatePixels(pixels: Pixel[]): Promise<void> {
   for (const pixel of pixels) {
-    const { error } = await supabase
+    const { error } = await getSupabase()
       .from('pixels')
       .upsert(pixel)
 
@@ -139,7 +139,7 @@ export async function updatePixels(pixels: Pixel[]): Promise<void> {
 
 // 点击统计相关
 export async function recordClick(contactId: string, platform: string, page: string, ip: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from('clicks')
     .insert({ contactId, platform, page, ip })
 
@@ -147,7 +147,7 @@ export async function recordClick(contactId: string, platform: string, page: str
 }
 
 export async function getClickStats(): Promise<{ clicks: Click[]; total: number; today: number }> {
-  const { data: clicks, error } = await supabase
+  const { data: clicks, error } = await getSupabase()
     .from('clicks')
     .select('*')
     .order('timestamp', { ascending: false })

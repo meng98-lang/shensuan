@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getContacts, createContact, deleteContact, updateContact } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const contacts = await getContacts();
   return NextResponse.json(contacts);
