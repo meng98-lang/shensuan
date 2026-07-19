@@ -44,6 +44,14 @@ export default function AdminDashboard() {
     customCode: ''
   });
 
+  // 新增联系方式表单
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newContact, setNewContact] = useState({
+    platform: 'line',
+    displayName: '',
+    link: ''
+  });
+
   useEffect(() => {
     const auth = sessionStorage.getItem('admin_auth');
     if (!auth) {
@@ -65,19 +73,19 @@ export default function AdminDashboard() {
   };
 
   const handleAddContact = async () => {
-    const platform = prompt('平台 (line/whatsapp/telegram/wechat):');
-    if (!platform) return;
-    const displayName = prompt('顯示名稱:');
-    if (!displayName) return;
-    const link = prompt('連結:');
-    if (!link) return;
+    if (!newContact.displayName || !newContact.link) {
+      alert('請填寫顯示名稱和連結');
+      return;
+    }
 
     const res = await fetch('/api/contacts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ platform, displayName, link, active: true })
+      body: JSON.stringify({ ...newContact, active: true })
     });
     setContacts(await res.json());
+    setNewContact({ platform: 'line', displayName: '', link: '' });
+    setShowAddForm(false);
   };
 
   const handleDeleteContact = async (id: string) => {
@@ -155,9 +163,65 @@ export default function AdminDashboard() {
 
         {activeTab === 'contacts' && (
           <div>
-            <button onClick={handleAddContact} className="mb-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+            <button 
+              onClick={() => setShowAddForm(!showAddForm)} 
+              className="mb-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+            >
               + 新增聯繫方式
             </button>
+
+            {showAddForm && (
+              <div className="bg-white p-4 rounded-lg shadow-sm mb-4 space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">平台</label>
+                  <select
+                    value={newContact.platform}
+                    onChange={(e) => setNewContact({ ...newContact, platform: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  >
+                    <option value="line">Line</option>
+                    <option value="whatsapp">WhatsApp</option>
+                    <option value="telegram">Telegram</option>
+                    <option value="wechat">微信</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">顯示名稱</label>
+                  <input
+                    type="text"
+                    value={newContact.displayName}
+                    onChange={(e) => setNewContact({ ...newContact, displayName: e.target.value })}
+                    placeholder="例如：通過 Line 與我聯繫"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">連結</label>
+                  <input
+                    type="text"
+                    value={newContact.link}
+                    onChange={(e) => setNewContact({ ...newContact, link: e.target.value })}
+                    placeholder="例如：https://line.me/R/ti/p/@yourid"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  />
+                </div>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={handleAddContact}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                  >
+                    保存
+                  </button>
+                  <button
+                    onClick={() => setShowAddForm(false)}
+                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+                  >
+                    取消
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="space-y-2">
               {contacts.map(contact => (
                 <div key={contact.id} className="bg-white p-4 rounded-lg shadow-sm flex justify-between items-center">
@@ -198,8 +262,14 @@ export default function AdminDashboard() {
                 type="text"
                 value={settings.avatarUrl}
                 onChange={(e) => setSettings({ ...settings, avatarUrl: e.target.value })}
+                placeholder="https://example.com/avatar.jpg"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg"
               />
+              {settings.avatarUrl && (
+                <div className="mt-2">
+                  <img src={settings.avatarUrl} alt="头像预览" className="w-20 h-20 rounded-full object-cover" />
+                </div>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -226,11 +296,14 @@ export default function AdminDashboard() {
               <textarea
                 value={settings.note}
                 onChange={(e) => setSettings({ ...settings, note: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 rows={3}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
               />
             </div>
-            <button onClick={handleSaveSettings} className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+            <button
+              onClick={handleSaveSettings}
+              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+            >
               保存設定
             </button>
           </div>
@@ -239,13 +312,13 @@ export default function AdminDashboard() {
         {activeTab === 'pixels' && (
           <div className="bg-white p-6 rounded-lg shadow-sm space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Google Analytics (G-ID)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Google Analytics ID</label>
               <input
                 type="text"
                 value={pixels.googleAnalytics}
                 onChange={(e) => setPixels({ ...pixels, googleAnalytics: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 placeholder="G-XXXXXXXXXX"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
               />
             </div>
             <div>
@@ -254,8 +327,8 @@ export default function AdminDashboard() {
                 type="text"
                 value={pixels.facebookPixel}
                 onChange={(e) => setPixels({ ...pixels, facebookPixel: e.target.value })}
+                placeholder="123456789012345"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                placeholder="1234567890"
               />
             </div>
             <div>
@@ -264,6 +337,7 @@ export default function AdminDashboard() {
                 type="text"
                 value={pixels.tiktokPixel}
                 onChange={(e) => setPixels({ ...pixels, tiktokPixel: e.target.value })}
+                placeholder="XXXXXXXXXX"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg"
               />
             </div>
@@ -272,12 +346,15 @@ export default function AdminDashboard() {
               <textarea
                 value={pixels.customCode}
                 onChange={(e) => setPixels({ ...pixels, customCode: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg font-mono text-sm"
                 rows={6}
-                placeholder="<script>...</script>"
+                placeholder="粘贴自定义 HTML/JS 代码"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg font-mono text-sm"
               />
             </div>
-            <button onClick={handleSavePixels} className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+            <button
+              onClick={handleSavePixels}
+              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+            >
               保存像素代碼
             </button>
           </div>
