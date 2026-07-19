@@ -1,0 +1,16 @@
+[
+  {
+    "id": "1",
+    "platform": "line",
+    "displayName": "通過 line 與我聯繫",
+    "link": "https://line.me/R/ti/p/@111jmsxv",
+    "active": true
+  },
+  {
+    "id": "2",
+    "platform": "whatsapp",
+    "displayName": "通過 whats 與我聯繫",
+    "link": "https://wa.me/13023107970",
+    "active": true
+  }
+]
