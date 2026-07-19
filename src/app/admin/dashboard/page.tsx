@@ -8,15 +8,15 @@ interface Contact {
   platform: string;
   displayName: string;
   link: string;
-  active: boolean;
+  enabled: boolean;
 }
 
 interface Settings {
   siteName: string;
   avatarUrl: string;
-  bgColor: string;
+  backgroundColor: string;
   themeColor: string;
-  note: string;
+  noteText: string;
 }
 
 interface Pixels {
@@ -49,9 +49,9 @@ export default function AdminDashboard() {
   const [settings, setSettings] = useState<Settings>({
     siteName: '',
     avatarUrl: '',
-    bgColor: '#f5f5dc',
+    backgroundColor: '#f5f5dc',
     themeColor: '#4a7c59',
-    note: ''
+    noteText: ''
   });
   const [pixels, setPixels] = useState<Pixels>({
     googleAnalytics: '',
@@ -118,7 +118,7 @@ export default function AdminDashboard() {
     const res = await fetch('/api/contacts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...newContact, active: true })
+      body: JSON.stringify({ ...newContact, enabled: true })
     });
     setContacts(await res.json());
     setNewContact({ platform: 'line', displayName: '', link: '' });
@@ -319,8 +319,8 @@ export default function AdminDashboard() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">背景顏色</label>
                 <input
                   type="color"
-                  value={settings.bgColor}
-                  onChange={(e) => setSettings({ ...settings, bgColor: e.target.value })}
+                  value={settings.backgroundColor}
+                  onChange={(e) => setSettings({ ...settings, backgroundColor: e.target.value })}
                   className="w-full h-10 border border-gray-300 rounded-lg"
                 />
               </div>
@@ -337,8 +337,8 @@ export default function AdminDashboard() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">備註文字</label>
               <textarea
-                value={settings.note}
-                onChange={(e) => setSettings({ ...settings, note: e.target.value })}
+                value={settings.noteText}
+                onChange={(e) => setSettings({ ...settings, noteText: e.target.value })}
                 rows={3}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg"
               />
