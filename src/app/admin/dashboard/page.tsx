@@ -270,13 +270,13 @@ export default function AdminDashboard() {
                 <div key={contact.id} className="bg-white p-4 rounded-lg shadow-sm flex justify-between items-center">
                   <div>
                     <span className="font-medium">{contact.displayName}</span>
-                    <span className={`ml-2 text-xs px-2 py-1 rounded ${contact.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
-                      {contact.active ? '啟用' : '停用'}
+                    <span className={`ml-2 text-xs px-2 py-1 rounded ${contact.enabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                      {contact.enabled ? '啟用' : '停用'}
                     </span>
                   </div>
                   <div className="space-x-2">
                     <button onClick={() => handleToggleContact(contact.id)} className="text-sm text-blue-600 hover:underline">
-                      {contact.active ? '停用' : '啟用'}
+                      {contact.enabled ? '停用' : '啟用'}
                     </button>
                     <button onClick={() => handleDeleteContact(contact.id)} className="text-sm text-red-600 hover:underline">
                       刪除
