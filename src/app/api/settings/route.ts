@@ -10,6 +10,7 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   const body = await request.json();
-  const settings = await updateSettings(body);
+  await updateSettings(body);
+  const settings = await getSettings();
   return NextResponse.json(settings);
 }

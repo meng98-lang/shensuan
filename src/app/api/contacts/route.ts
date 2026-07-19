@@ -1,27 +1,29 @@
 import { NextResponse } from 'next/server';
-import { getContacts, createContact, deleteContact, updateContact } from '@/lib/db';
+import { getContacts, getAllContacts, createContact, deleteContact, updateContact } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const contacts = await getContacts();
+  const contacts = await getAllContacts();
   return NextResponse.json(contacts);
 }
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const contacts = await createContact(body);
-  return NextResponse.json(contacts);
+  const contact = await createContact(body);
+  return NextResponse.json(contact);
 }
 
 export async function DELETE(request: Request) {
   const { id } = await request.json();
-  const contacts = await deleteContact(id);
+  await deleteContact(id);
+  const contacts = await getAllContacts();
   return NextResponse.json(contacts);
 }
 
 export async function PATCH(request: Request) {
-  const { id, enabled } = await request.json();
-  const contacts = await updateContact(id, enabled);
+  const { id, ...updates } = await request.json();
+  await updateContact(id, updates);
+  const contacts = await getAllContacts();
   return NextResponse.json(contacts);
 }
