@@ -8,7 +8,7 @@ interface ContactButtonProps {
     platform: string
     displayName: string
     link: string
-    active: boolean
+    enabled: boolean
   }
   themeColor: string
 }
