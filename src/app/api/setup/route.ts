@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 const SQL = `
 CREATE TABLE IF NOT EXISTS ss_settings (
   id INTEGER PRIMARY KEY DEFAULT 1,
-  site_name TEXT DEFAULT '神算黃鐵口',
+  site_name TEXT DEFAULT '靜安道長',
   avatar_url TEXT DEFAULT 'https://i.imgur.com/LoZbIWD.jpeg',
   background_color TEXT DEFAULT '#f5f5dc',
   theme_color TEXT DEFAULT '#4a7c59',

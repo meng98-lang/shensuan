@@ -120,7 +120,7 @@ function rowToClick(row: ClickRow): Click {
 }
 
 const defaultSettings: SiteSettings = {
-  siteName: '神算黃鐵口',
+  siteName: '靜安道長',
   avatarUrl: 'https://i.imgur.com/LoZbIWD.jpeg',
   backgroundColor: '#f5f5dc',
   themeColor: '#4a7c59',
