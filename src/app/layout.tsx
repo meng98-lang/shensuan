@@ -3,35 +3,32 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: '新应用 | 扣子编程',
-    template: '%s | 扣子编程',
+    default: '你知道鐵口先生這個名號怎麼來的嗎？',
+    template: '%s | 神算黃鐵口',
   },
   description:
-    '扣子编程是一款一站式云端 Vibe Coding 开发平台。通过对话轻松构建智能体、工作流和网站，实现从创意到上线的无缝衔接。',
+    '神算黃鐵口 - 專業命理諮詢服務，為您解答人生疑惑，指點迷津。',
   keywords: [
-    '扣子编程',
-    'Coze Code',
-    'Vibe Coding',
-    'AI 编程',
-    '智能体搭建',
-    '工作流搭建',
-    '网站搭建',
-    '网站部署',
-    '全栈开发',
-    'AI 工程师',
+    '神算黃鐵口',
+    '鐵口先生',
+    '命理諮詢',
+    '八字算命',
+    '風水命理',
+    '紫微斗數',
+    '占卜問事',
   ],
-  authors: [{ name: 'Coze Code Team', url: 'https://code.coze.cn' }],
-  generator: 'Coze Code',
+  authors: [{ name: '神算黃鐵口', url: 'https://www.taijijiaoxue11.shop' }],
+  generator: '神算黃鐵口',
   // icons: {
   //   icon: '',
   // },
   openGraph: {
-    title: '扣子编程 | 你的 AI 工程师已就位',
+    title: '神算黃鐵口 | 你知道鐵口先生這個名號怎麼來的嗎？',
     description:
-      '我正在使用扣子编程 Vibe Coding，让创意瞬间上线。告别拖拽，拥抱心流。',
-    url: 'https://code.coze.cn',
-    siteName: '扣子编程',
-    locale: 'zh_CN',
+      '神算黃鐵口 - 專業命理諮詢服務，為您解答人生疑惑，指點迷津。',
+    url: 'https://www.taijijiaoxue11.shop',
+    siteName: '神算黃鐵口',
+    locale: 'zh_TW',
     type: 'website',
     // images: [
     //   {
