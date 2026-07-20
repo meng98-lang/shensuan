@@ -3,31 +3,31 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: '你知道鐵口先生這個名號怎麼來的嗎？',
-    template: '%s | 神算黃鐵口',
+    default: '靜安道長',
+    template: '%s | 靜安道長',
   },
   description:
-    '神算黃鐵口 - 專業命理諮詢服務，為您解答人生疑惑，指點迷津。',
+    '靜安道長 - 專業命理諮詢服務，為您解答人生疑惑，指點迷津。',
   keywords: [
-    '神算黃鐵口',
-    '鐵口先生',
+    '靜安道長',
+    '道長',
     '命理諮詢',
     '八字算命',
     '風水命理',
     '紫微斗數',
     '占卜問事',
   ],
-  authors: [{ name: '神算黃鐵口', url: 'https://www.taijijiaoxue11.shop' }],
-  generator: '神算黃鐵口',
+  authors: [{ name: '靜安道長', url: 'https://www.taijijiaoxue11.shop' }],
+  generator: '靜安道長',
   // icons: {
   //   icon: '',
   // },
   openGraph: {
-    title: '神算黃鐵口 | 你知道鐵口先生這個名號怎麼來的嗎？',
+    title: '靜安道長',
     description:
-      '神算黃鐵口 - 專業命理諮詢服務，為您解答人生疑惑，指點迷津。',
+      '靜安道長 - 專業命理諮詢服務，為您解答人生疑惑，指點迷津。',
     url: 'https://www.taijijiaoxue11.shop',
-    siteName: '神算黃鐵口',
+    siteName: '靜安道長',
     locale: 'zh_TW',
     type: 'website',
     // images: [
