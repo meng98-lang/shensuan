@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     template: '%s | 靜安師傅',
   },
   description:
-    '靜安師傅 - 專業命理諮詢服務，為您解答人生疑惑，指點迷津。',
+    '靜安師傅 - 專業諮詢服務，為您解答人生疑惑，指點迷津。',
   keywords: [
     '靜安師傅',
     '道長',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: '靜安師傅',
     description:
-      '靜安師傅 - 專業命理諮詢服務，為您解答人生疑惑，指點迷津。',
+      '靜安師傅 - 專業諮詢服務，為您解答人生疑惑，指點迷津。',
     url: 'https://www.taijijiaoxue11.shop',
     siteName: '靜安師傅',
     locale: 'zh_TW',
