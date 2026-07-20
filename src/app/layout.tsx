@@ -3,13 +3,13 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: '靜安道長',
-    template: '%s | 靜安道長',
+    default: '靜安師傅',
+    template: '%s | 靜安師傅',
   },
   description:
-    '靜安道長 - 專業命理諮詢服務，為您解答人生疑惑，指點迷津。',
+    '靜安師傅 - 專業命理諮詢服務，為您解答人生疑惑，指點迷津。',
   keywords: [
-    '靜安道長',
+    '靜安師傅',
     '道長',
     '命理諮詢',
     '八字算命',
@@ -17,17 +17,17 @@ export const metadata: Metadata = {
     '紫微斗數',
     '占卜問事',
   ],
-  authors: [{ name: '靜安道長', url: 'https://www.taijijiaoxue11.shop' }],
-  generator: '靜安道長',
+  authors: [{ name: '靜安師傅', url: 'https://www.taijijiaoxue11.shop' }],
+  generator: '靜安師傅',
   // icons: {
   //   icon: '',
   // },
   openGraph: {
-    title: '靜安道長',
+    title: '靜安師傅',
     description:
-      '靜安道長 - 專業命理諮詢服務，為您解答人生疑惑，指點迷津。',
+      '靜安師傅 - 專業命理諮詢服務，為您解答人生疑惑，指點迷津。',
     url: 'https://www.taijijiaoxue11.shop',
-    siteName: '靜安道長',
+    siteName: '靜安師傅',
     locale: 'zh_TW',
     type: 'website',
     // images: [

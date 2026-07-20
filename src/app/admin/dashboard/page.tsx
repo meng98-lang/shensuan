@@ -209,7 +209,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold">靜安道長 - 管理後台</h1>
+          <h1 className="text-xl font-bold">靜安師傅 - 管理後台</h1>
           <button onClick={handleLogout} className="text-sm text-gray-600 hover:text-gray-900">登出</button>
         </div>
       </div>
